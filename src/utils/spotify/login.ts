@@ -7,8 +7,6 @@ const client_id = process.env.REACT_APP_SPOTIFY_CLIENT_ID as string;
 const raw_redirect_uri = process.env.REACT_APP_SPOTIFY_REDIRECT_URL as string;
 const redirect_uri = raw_redirect_uri.replace(/\/$/, ''); // Consistently remove trailing slash
 
-const authUrl = new URL('https://accounts.spotify.com/authorize');
-
 const SCOPES = [
   'ugc-image-upload',
 
