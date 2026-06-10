@@ -95,9 +95,13 @@ const requestToken = async (code: string) => {
 
   const exchange = (async () => {
     const code_verifier = localStorage.getItem('code_verifier');
+    console.log('[PROD DEBUG] Code Verifier:', code_verifier ? 'FOUND' : 'MISSING');
 
     if (!code_verifier) {
-      throw new Error('Missing code_verifier');
+      const errorMsg = 'Auth failed: code_verifier missing from storage. This happens if the browser blocks cookies or clears storage during redirect.';
+      console.error('[PROD DEBUG]', errorMsg);
+      alert(errorMsg);
+      throw new Error(errorMsg);
     }
 
     const body = new URLSearchParams({
@@ -107,6 +111,8 @@ const requestToken = async (code: string) => {
       code_verifier,
       grant_type: 'authorization_code',
     });
+
+    console.log('[PROD DEBUG] Sending request to Spotify with URI:', redirect_uri);
 
     try {
       const { data: response } = await Axios.post<{
@@ -121,6 +127,7 @@ const requestToken = async (code: string) => {
       });
 
       if (response.access_token) {
+        console.log('[PROD DEBUG] Token exchange SUCCESS');
         setLocalStorageWithExpiry(
           'access_token',
           response.access_token,
@@ -129,10 +136,14 @@ const requestToken = async (code: string) => {
         axios.defaults.headers.common['Authorization'] = 'Bearer ' + response.access_token;
         localStorage.setItem('refresh_token', response.refresh_token);
         localStorage.removeItem('code_verifier');
+        alert('Login Successful! Loading profile...');
       }
 
       return response.access_token;
     } catch (err: any) {
+      const errorData = err.response?.data;
+      console.error('[PROD DEBUG] Token exchange ERROR:', errorData);
+      alert('Spotify Error: ' + JSON.stringify(errorData || err.message));
       throw err;
     }
   })();
