@@ -60,6 +60,12 @@ const cacheKeyFor = (config: any) =>
 axios.interceptors.request.use(async (config) => {
   await acquireSlot();
 
+  // Dynamically inject the latest token from local storage
+  const token = getFromLocalStorageWithExpiry('access_token');
+  if (token) {
+    config.headers['Authorization'] = 'Bearer ' + token;
+  }
+
   if (isCacheableGet(config)) {
     const key = cacheKeyFor(config);
     const entry = await cacheGet(key);
