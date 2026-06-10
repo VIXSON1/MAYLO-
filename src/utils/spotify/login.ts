@@ -165,16 +165,20 @@ const getToken = async () => {
   let error = urlParams.get('error') as string;
 
   if (error) {
+    console.error('[AUTH DEBUG] Spotify returned error in URL:', error);
     window.history.replaceState({}, document.title, window.location.pathname);
     return [null, false];
   }
 
   if (code) {
+    console.log('[AUTH DEBUG] Found code in URL, starting exchange...');
     window.history.replaceState({}, document.title, window.location.pathname);
     try {
       const token = await requestToken(code);
+      console.log('[AUTH DEBUG] Token exchange result:', token ? 'SUCCESS' : 'EMPTY');
       return [token, true];
     } catch (error) {
+      console.error('[AUTH DEBUG] Token exchange threw error:', error);
       return [null, true];
     }
   }
