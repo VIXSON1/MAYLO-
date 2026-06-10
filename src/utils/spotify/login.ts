@@ -115,7 +115,7 @@ const requestToken = async (code: string) => {
     console.log('[PROD DEBUG] Sending request to Spotify with URI:', redirect_uri);
 
     try {
-      const { data: response } = await Axios.post<{
+      const response = await Axios.post<{
         access_token: string;
         token_type: string;
         expires_in: number;
@@ -126,24 +126,24 @@ const requestToken = async (code: string) => {
         },
       });
 
-      if (response.access_token) {
-        console.log('[PROD DEBUG] Token exchange SUCCESS');
+      console.log('[AUTH DEBUG] Spotify Response:', response.data);
+
+      if (response.data.access_token) {
         setLocalStorageWithExpiry(
           'access_token',
-          response.access_token,
-          response.expires_in * 1000
+          response.data.access_token,
+          response.data.expires_in * 1000
         );
-        axios.defaults.headers.common['Authorization'] = 'Bearer ' + response.access_token;
-        localStorage.setItem('refresh_token', response.refresh_token);
+        axios.defaults.headers.common['Authorization'] = 'Bearer ' + response.data.access_token;
+        localStorage.setItem('refresh_token', response.data.refresh_token);
         localStorage.removeItem('code_verifier');
-        alert('Login Successful! Loading profile...');
+        alert('SUCCESS: Token received! Redirecting to your profile...');
       }
 
-      return response.access_token;
+      return response.data.access_token;
     } catch (err: any) {
-      const errorData = err.response?.data;
-      console.error('[PROD DEBUG] Token exchange ERROR:', errorData);
-      alert('Spotify Error: ' + JSON.stringify(errorData || err.message));
+      const errorDetail = err.response?.data ? JSON.stringify(err.response.data) : err.message;
+      alert('SPOTIFY TOKEN ERROR: ' + errorDetail + '\n\nThis usually means the Redirect URI in Vercel does not match Spotify Dashboard.');
       throw err;
     }
   })();
