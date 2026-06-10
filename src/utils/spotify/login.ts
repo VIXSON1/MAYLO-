@@ -164,6 +164,8 @@ const getToken = async () => {
   let code = urlParams.get('code') as string;
   let error = urlParams.get('error') as string;
 
+  console.log('[AUTH DEBUG] URL Params:', { hasCode: !!code, hasError: !!error });
+
   if (error) {
     console.error('[AUTH DEBUG] Spotify returned error in URL:', error);
     window.history.replaceState({}, document.title, window.location.pathname);
@@ -172,13 +174,15 @@ const getToken = async () => {
 
   if (code) {
     console.log('[AUTH DEBUG] Found code in URL, starting exchange...');
-    window.history.replaceState({}, document.title, window.location.pathname);
+    // window.history.replaceState({}, document.title, window.location.pathname); // Temporarily disable to see if it affects anything
     try {
       const token = await requestToken(code);
       console.log('[AUTH DEBUG] Token exchange result:', token ? 'SUCCESS' : 'EMPTY');
+      window.history.replaceState({}, document.title, window.location.pathname);
       return [token, true];
     } catch (error) {
       console.error('[AUTH DEBUG] Token exchange threw error:', error);
+      window.history.replaceState({}, document.title, window.location.pathname);
       return [null, true];
     }
   }
