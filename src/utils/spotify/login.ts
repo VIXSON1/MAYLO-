@@ -143,11 +143,10 @@ const requestToken = async (code: string) => {
         localStorage.setItem('refresh_token', response.data.refresh_token);
         localStorage.removeItem('code_verifier');
         
-        const saved = getFromLocalStorageWithExpiry('access_token');
-        const savedRaw = localStorage.getItem('access_token_raw');
-        alert('STORAGE VERIFY - Expiry: ' + (saved ? 'OK' : 'FAIL') + ' | Raw: ' + (savedRaw ? 'OK' : 'FAIL'));
-        
-        alert('SUCCESS: Token received! Redirecting...');
+        // --- ADDED FOR VERCEL ---
+        // Force immediate reload to ensure interceptors pick up the new storage
+        alert('LOGIN SUCCESS! Press OK to reload and enter the app.');
+        window.location.href = window.location.origin;
       }
 
       return response.data.access_token;
