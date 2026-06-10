@@ -13,6 +13,10 @@ import es from 'javascript-time-ago/locale/es-AR';
 TimeAgo.addDefaultLocale(en);
 TimeAgo.addLocale(es);
 
+window.onerror = function (message, source, lineno, colno, error) {
+  alert('GLOBAL ERROR: ' + message + '\nAt: ' + source + ':' + lineno);
+};
+
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 // NOTE: StrictMode is intentionally disabled. In dev it double-invokes every effect, which
 // fires every Spotify API request twice and was a major contributor to hitting Spotify's

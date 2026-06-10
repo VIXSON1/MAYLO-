@@ -155,6 +155,13 @@ const requestToken = async (code: string) => {
 const inFlightExchanges: Record<string, Promise<string> | undefined> = {};
 
 const getToken = async () => {
+  // 1. Force clear storage if user specifically types #clear in URL
+  if (window.location.hash === '#clear') {
+    localStorage.clear();
+    alert('Local Storage Cleared!');
+    window.location.hash = '';
+  }
+
   const token = getFromLocalStorageWithExpiry('access_token');
   if (token) {
     return [token, true];
@@ -164,24 +171,23 @@ const getToken = async () => {
   let code = urlParams.get('code') as string;
   let error = urlParams.get('error') as string;
 
-  console.log('[AUTH DEBUG] URL Params:', { hasCode: !!code, hasError: !!error });
+  // IMMEDIATELY log to alert since console is not visible to you
+  if (code || error) {
+    alert('[AUTH ATTEMPT] Code: ' + (code ? 'YES' : 'NO') + ' | Error: ' + (error || 'NONE'));
+  }
 
   if (error) {
-    console.error('[AUTH DEBUG] Spotify returned error in URL:', error);
     window.history.replaceState({}, document.title, window.location.pathname);
     return [null, false];
   }
 
   if (code) {
-    console.log('[AUTH DEBUG] Found code in URL, starting exchange...');
-    // window.history.replaceState({}, document.title, window.location.pathname); // Temporarily disable to see if it affects anything
     try {
       const token = await requestToken(code);
-      console.log('[AUTH DEBUG] Token exchange result:', token ? 'SUCCESS' : 'EMPTY');
       window.history.replaceState({}, document.title, window.location.pathname);
       return [token, true];
-    } catch (error) {
-      console.error('[AUTH DEBUG] Token exchange threw error:', error);
+    } catch (error: any) {
+      alert('TOKEN EXCHANGE FAILED: ' + error.message);
       window.history.replaceState({}, document.title, window.location.pathname);
       return [null, true];
     }
