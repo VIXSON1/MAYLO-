@@ -129,20 +129,25 @@ const requestToken = async (code: string) => {
       console.log('[AUTH DEBUG] Spotify Response:', response.data);
 
       if (response.data.access_token) {
+        alert('TOKEN RECEIVED FROM SPOTIFY!');
         setLocalStorageWithExpiry(
           'access_token',
           response.data.access_token,
           response.data.expires_in * 1000
         );
+        
+        // Use direct localStorage for testing
+        localStorage.setItem('access_token_raw', response.data.access_token);
+        
         axios.defaults.headers.common['Authorization'] = 'Bearer ' + response.data.access_token;
         localStorage.setItem('refresh_token', response.data.refresh_token);
         localStorage.removeItem('code_verifier');
         
-        // ADDED: Extra check to ensure it was saved
         const saved = getFromLocalStorageWithExpiry('access_token');
-        alert('TOKEN SAVED CHECK: ' + (saved ? 'YES' : 'NO - FAILED TO SAVE'));
+        const savedRaw = localStorage.getItem('access_token_raw');
+        alert('STORAGE VERIFY - Expiry: ' + (saved ? 'OK' : 'FAIL') + ' | Raw: ' + (savedRaw ? 'OK' : 'FAIL'));
         
-        alert('SUCCESS: Token received! Redirecting to your profile...');
+        alert('SUCCESS: Token received! Redirecting...');
       }
 
       return response.data.access_token;
