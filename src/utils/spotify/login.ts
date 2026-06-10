@@ -129,15 +129,14 @@ const requestToken = async (code: string) => {
       console.log('[AUTH DEBUG] Spotify Response:', response.data);
 
       if (response.data.access_token) {
-        alert('TOKEN RECEIVED FROM SPOTIFY!');
+        // Use direct localStorage for testing
+        localStorage.setItem('access_token_raw', response.data.access_token);
+        
         setLocalStorageWithExpiry(
           'access_token',
           response.data.access_token,
           response.data.expires_in * 1000
         );
-        
-        // Use direct localStorage for testing
-        localStorage.setItem('access_token_raw', response.data.access_token);
         
         axios.defaults.headers.common['Authorization'] = 'Bearer ' + response.data.access_token;
         localStorage.setItem('refresh_token', response.data.refresh_token);
