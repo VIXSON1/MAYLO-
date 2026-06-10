@@ -137,6 +137,11 @@ const requestToken = async (code: string) => {
         axios.defaults.headers.common['Authorization'] = 'Bearer ' + response.data.access_token;
         localStorage.setItem('refresh_token', response.data.refresh_token);
         localStorage.removeItem('code_verifier');
+        
+        // ADDED: Extra check to ensure it was saved
+        const saved = getFromLocalStorageWithExpiry('access_token');
+        alert('TOKEN SAVED CHECK: ' + (saved ? 'YES' : 'NO - FAILED TO SAVE'));
+        
         alert('SUCCESS: Token received! Redirecting to your profile...');
       }
 

@@ -63,7 +63,9 @@ axios.interceptors.request.use(async (config) => {
   // Dynamically inject the latest token from local storage
   const token = getFromLocalStorageWithExpiry('access_token');
   if (token) {
-    config.headers['Authorization'] = 'Bearer ' + token;
+    config.headers.Authorization = 'Bearer ' + token;
+  } else {
+    console.warn('[AXIOS DEBUG] No token found in localStorage for request:', config.url);
   }
 
   if (isCacheableGet(config)) {
